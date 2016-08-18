@@ -2,11 +2,13 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -52,16 +54,39 @@ func main() {
 	inp, outp, err := getIO()
 	if err == nil {
 		scanner := bufio.NewScanner(inp)
-		for scanner.Scan() {
+		for scanner.Scan() && err == nil {
 			line := scanner.Text()
 			if strings.HasPrefix(line, "Benchmark") {
-				fmt.Fprintln(outp, line)
+				err = parseLine(line, outp)
 			}
 		}
-		err = scanner.Err()
+		if err == nil {
+			err = scanner.Err()
+		}
 	}
 	if err != nil {
 		log.Fatalf("error: %s", err)
 		os.Exit(1)
 	}
+}
+
+func parseLine(line string, o io.Writer) (err error) {
+	cols := strings.Split(line[9:], "\t") // 9 = len(benchmark)
+	for i, c := range cols {
+		cols[i] = strings.TrimSpace(c)
+	}
+	res := map[string]interface{}{
+		"name": strings.SplitN(cols[0], "-", 2)[0], // Clip CPU from Benchmark Name
+	}
+	res["iter"], err = strconv.Atoi(cols[1])
+	if err == nil {
+		for _, k := range cols[2:] {
+			parts := strings.SplitN(k, " ", 2)
+			res[parts[1]], err = strconv.ParseFloat(parts[0], 64)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return json.NewEncoder(o).Encode(res)
 }
