@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"os/exec"
 	"reflect"
 	"testing"
@@ -53,27 +52,27 @@ ok  	github.com/bign8/games/impl/ttt	11.140s
 ?   	github.com/bign8/games/player/cli	[no test files]
 ?   	github.com/bign8/games/player/minimax	[no test files]`
 
-var expected = `{"B/op":128,"allocs/op":1,"iter":2000000,"name":"StateApply","ns/op":864}
-{"B/op":0,"allocs/op":0,"iter":10000000,"name":"LocationParse","ns/op":174}
-{"B/op":0,"allocs/op":0,"iter":100000000,"name":"LocationOffset","ns/op":19.2}
-{"B/op":2720,"allocs/op":2,"iter":30000,"name":"Moves","ns/op":56528}
-{"B/op":0,"allocs/op":0,"iter":30000,"name":"MovesClip","ns/op":48760}
-{"B/op":0,"allocs/op":0,"iter":1000000,"name":"MovesRook","ns/op":1171}
-{"B/op":0,"allocs/op":0,"iter":10000000,"name":"MovesPawn","ns/op":117}
-{"B/op":0,"allocs/op":0,"iter":2000000,"name":"MovesKnight","ns/op":699}
-{"B/op":0,"allocs/op":0,"iter":2000000,"name":"MovesBishop","ns/op":737}
-{"B/op":0,"allocs/op":0,"iter":1000000,"name":"MovesQueen","ns/op":1858}
-{"B/op":64,"allocs/op":2,"iter":2000000,"name":"MovesKing","ns/op":874}
-{"B/op":0,"allocs/op":0,"iter":1000000,"name":"StateIsCheck","ns/op":1900}
-{"B/op":224,"allocs/op":2,"iter":1000000,"name":"ParseFEN","ns/op":1063}
-{"B/op":66,"allocs/op":3,"iter":1000000,"name":"StringFEN","ns/op":2281}
-{"B/op":5568,"allocs/op":27,"iter":50000,"name":"StateString","ns/op":34273}
-{"B/op":240,"allocs/op":1,"iter":500000,"name":"StateString","ns/op":2583}
-{"B/op":360,"allocs/op":6,"iter":1000000,"name":"NewState","ns/op":1936}
-{"B/op":128,"allocs/op":2,"iter":3000000,"name":"Apply","ns/op":511}
-{"B/op":0,"allocs/op":0,"iter":20000000,"name":"Terminal","ns/op":65.4}
-{"B/op":0,"allocs/op":0,"iter":20000000,"name":"Utility","ns/op":81.3}
-{"B/op":5056,"allocs/op":6,"iter":200000,"name":"SVG","ns/op":8013}`
+var expected = `{"B/op":128,"allocs/op":1,"iter":2000000,"name":"StateApply","ns/op":864,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":0,"allocs/op":0,"iter":10000000,"name":"LocationParse","ns/op":174,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":0,"allocs/op":0,"iter":100000000,"name":"LocationOffset","ns/op":19.2,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":2720,"allocs/op":2,"iter":30000,"name":"Moves","ns/op":56528,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":0,"allocs/op":0,"iter":30000,"name":"MovesClip","ns/op":48760,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":0,"allocs/op":0,"iter":1000000,"name":"MovesRook","ns/op":1171,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":0,"allocs/op":0,"iter":10000000,"name":"MovesPawn","ns/op":117,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":0,"allocs/op":0,"iter":2000000,"name":"MovesKnight","ns/op":699,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":0,"allocs/op":0,"iter":2000000,"name":"MovesBishop","ns/op":737,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":0,"allocs/op":0,"iter":1000000,"name":"MovesQueen","ns/op":1858,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":64,"allocs/op":2,"iter":2000000,"name":"MovesKing","ns/op":874,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":0,"allocs/op":0,"iter":1000000,"name":"StateIsCheck","ns/op":1900,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":224,"allocs/op":2,"iter":1000000,"name":"ParseFEN","ns/op":1063,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":66,"allocs/op":3,"iter":1000000,"name":"StringFEN","ns/op":2281,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":5568,"allocs/op":27,"iter":50000,"name":"StateString","ns/op":34273,"suite":"github.com/bign8/games/impl/chess"}
+{"B/op":240,"allocs/op":1,"iter":500000,"name":"StateString","ns/op":2583,"suite":"github.com/bign8/games/impl/ttt"}
+{"B/op":360,"allocs/op":6,"iter":1000000,"name":"NewState","ns/op":1936,"suite":"github.com/bign8/games/impl/ttt"}
+{"B/op":128,"allocs/op":2,"iter":3000000,"name":"Apply","ns/op":511,"suite":"github.com/bign8/games/impl/ttt"}
+{"B/op":0,"allocs/op":0,"iter":20000000,"name":"Terminal","ns/op":65.4,"suite":"github.com/bign8/games/impl/ttt"}
+{"B/op":0,"allocs/op":0,"iter":20000000,"name":"Utility","ns/op":81.3,"suite":"github.com/bign8/games/impl/ttt"}
+{"B/op":5056,"allocs/op":6,"iter":200000,"name":"SVG","ns/op":8013,"suite":"github.com/bign8/games/impl/ttt"}`
 
 func TestMain(t *testing.T) {
 	cmd := exec.Command("go", "run", "main.go")
@@ -100,7 +99,8 @@ func TestMain(t *testing.T) {
 }
 
 func BenchmarkParseLine(b *testing.B) {
+	var o batcher
 	for i := 0; i < b.N; i++ {
-		parseLine("BenchmarkLocationOffset-8	100000000	        19.2 ns/op	       0 B/op	       0 allocs/op", ioutil.Discard)
+		o.parseLine("BenchmarkLocationOffset-8	100000000	        19.2 ns/op	       0 B/op	       0 allocs/op")
 	}
 }
