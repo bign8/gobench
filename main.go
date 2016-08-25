@@ -2,10 +2,13 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"regexp"
 	"strconv"
@@ -24,6 +27,7 @@ var (
 	in  = flag.String("in", "", "input file (default to stdin)")
 	out = flag.String("out", "", "output file (default to stdout)")
 	ver = flag.Bool("version", false, "print version and exit")
+	url = flag.String("host", os.Getenv("GOBENCH_URL"), "url of the gobench server")
 
 	findSuite = regexp.MustCompile(gtSuiteRE).FindStringSubmatch
 )
@@ -56,9 +60,15 @@ func main() {
 		fmt.Fprintf(os.Stdout, "gobench %s\n", version)
 		os.Exit(0)
 	}
-
-	// Actually process output
 	inp, outp, err := getIO()
+
+	// re-arrange outp if we have a url to post to
+	var buf bytes.Buffer
+	if *url != "" {
+		outp = io.MultiWriter(outp, &buf)
+	}
+
+	// Process Output
 	parser := batcher{Encoder: json.NewEncoder(outp)}
 	if err == nil {
 		scanner := bufio.NewScanner(inp)
@@ -69,8 +79,24 @@ func main() {
 			err = scanner.Err()
 		}
 	}
+
+	// Post to gobench server if possible
+	if err == nil && *url != "" {
+		var resp *http.Response
+		resp, err = http.Post(*url+"/upload", "application/json", &buf)
+		if err == nil {
+			fmt.Fprintf(os.Stderr, "Response (%s): ", resp.Status)
+			_, err = io.Copy(os.Stderr, resp.Body)
+			resp.Body.Close()
+		}
+		if err == nil && resp.StatusCode != http.StatusOK {
+			err = errors.New("failed to store data")
+		}
+	}
+
+	// Kill if errors are not good
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %s", err)
+		fmt.Fprintf(os.Stderr, "error: %s\n", err)
 		os.Exit(1)
 	}
 }
