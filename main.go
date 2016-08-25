@@ -56,15 +56,14 @@ func main() {
 		fmt.Fprintf(os.Stdout, "gobench %s\n", version)
 		os.Exit(0)
 	}
-	var parser batcher
 
 	// Actually process output
 	inp, outp, err := getIO()
-	enc := json.NewEncoder(outp)
+	parser := batcher{Encoder: json.NewEncoder(outp)}
 	if err == nil {
 		scanner := bufio.NewScanner(inp)
 		for scanner.Scan() && err == nil {
-			err = parser.parse(scanner.Text(), enc)
+			err = parser.parse(scanner.Text())
 		}
 		if err == nil {
 			err = scanner.Err()
@@ -76,25 +75,28 @@ func main() {
 	}
 }
 
-type batcher []map[string]interface{}
+type batcher struct {
+	*json.Encoder
+	list []map[string]interface{}
+}
 
-func (b *batcher) parse(line string, enc *json.Encoder) (err error) {
+func (b *batcher) parse(line string) (err error) {
 	if tokens := findSuite(line); tokens != nil {
-		err = b.flush(tokens[1], enc)
+		err = b.flush(tokens[1])
 	} else if strings.HasPrefix(line, "Benchmark") {
 		err = b.parseLine(line)
 	}
 	return err
 }
 
-func (b *batcher) flush(suite string, enc *json.Encoder) error {
-	for _, obj := range *b {
+func (b *batcher) flush(suite string) error {
+	for _, obj := range b.list {
 		obj["suite"] = suite
-		if err := enc.Encode(obj); err != nil {
+		if err := b.Encode(obj); err != nil {
 			return err
 		}
 	}
-	*b = nil // reset list
+	b.list = nil // reset list
 	return nil
 }
 
@@ -116,6 +118,6 @@ func (b *batcher) parseLine(line string) (err error) {
 			}
 		}
 	}
-	*b = append(*b, res)
+	b.list = append(b.list, res)
 	return nil
 }
