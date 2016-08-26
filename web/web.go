@@ -3,77 +3,41 @@ package main
 //go:generate appcfg.py update .
 
 import (
-	"encoding/json"
-	"fmt"
-	"html/template"
-	"io"
 	"net/http"
+	"strings"
+
+	"golang.org/x/net/context"
 
 	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
-	"google.golang.org/appengine/user"
+	"google.golang.org/cloud/datastore"
 )
 
 func init() {
-	http.HandleFunc("/upload", upload)
-	http.HandleFunc("/", index)
+	http.HandleFunc("/", route)
 }
 
 func main() {
 	appengine.Main()
 }
 
-var (
-	indexTPL = template.Must(template.ParseFiles("index.html"))
-	static   = http.FileServer(http.Dir("static"))
-)
-
-func index(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		static.ServeHTTP(w, r)
-		return
+func route(w http.ResponseWriter, r *http.Request) {
+	// TODO: defer recover here
+	// TODO: OPTIONS
+	w.Header().Add("X-Clacks-Overhead", "GNU Terry Pratchett")
+	switch r.Method {
+	case "GET":
+		index(w, r)
+	case "POST":
+		upload(w, r)
+	default:
+		// Technically http.StatusMethodNotAllowed, but less visible errors
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
-	ctx := appengine.NewContext(r)
-	u := user.Current(ctx)
-	vars := make(map[string]interface{})
-	if u != nil {
-		vars["user"] = u.String()
-	}
-	indexTPL.Execute(w, vars)
 }
 
-type bench struct {
-	Suite string  `json:"suite"`
-	Name  string  `json:"name"`
-	N     uint64  `json:"iter"`
-	NS    float64 `json:"ns/op"`
-	B     uint64  `json:"B/op"`
-	Alloc uint64  `json:"allocs/op"`
-}
-
-func upload(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Error(w, "POST requests only", http.StatusMethodNotAllowed)
-		return
+func path2key(ctx context.Context, path string) (key *datastore.Key) {
+	for _, folder := range strings.Split(path, "/") {
+		key = datastore.NewKey(ctx, "Path", folder, 0, key)
 	}
-	defer r.Body.Close()
-	dec := json.NewDecoder(r.Body)
-	ctx := appengine.NewContext(r)
-
-	// Parse entire payload
-	var err error
-	var set []*bench
-	for err == nil {
-		var ben bench
-		if err = dec.Decode(&ben); err == nil {
-			log.Debugf(ctx, "Data: %#v", ben)
-			set = append(set, &ben)
-		}
-	}
-
-	if err != io.EOF {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	} else {
-		fmt.Fprintln(w, "Success! (TODO: Return Post location)")
-	}
+	return key
 }

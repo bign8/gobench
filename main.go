@@ -15,6 +15,8 @@ import (
 	"strings"
 )
 
+// TODO: post metadata about the build
+
 const (
 	version = "v0.0.0"
 
