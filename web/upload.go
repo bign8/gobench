@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
@@ -25,6 +26,13 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			set = append(set, &ben)
 		}
 	}
+
+	// Figure out ancestor path for batch
+	tree := make(trie)
+	for _, ben := range set {
+		tree.Add(strings.Split(ben.Suite, "/"))
+	}
+	log.Infof(ctx, "Full Suite Prefix: %q", strings.Join(tree.Prefix(), "/"))
 
 	// TODO: put data in datastore
 
