@@ -71,16 +71,12 @@ func (t *trie) Prefix(max int) []string {
 
 type walker func(val string, parent interface{}) interface{}
 
-func (t *trie) Walk(piece string, start interface{}, walk walker) []interface{} {
-	parent := walk(piece, start)
+func (t *trie) Walk(start interface{}, walk walker) []interface{} {
 	var res []interface{}
 	for key, value := range *t {
-		if parts := value.Walk(key, parent, walk); len(parts) != 0 {
-			res = append(res, parts...)
-		}
-	}
-	if parent != nil && piece != "" {
+		parent := walk(key, start)
 		res = append(res, parent)
+		res = append(res, value.Walk(parent, walk)...)
 	}
 	return res
 }

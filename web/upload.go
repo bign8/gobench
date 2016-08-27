@@ -56,19 +56,13 @@ func upload(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	// walk the tree and build all the path objects
-	objs := tree.Walk("", &pair{
+	objs := tree.Walk(&pair{
 		Key: rootKey(ctx),
 	}, func(val string, parent interface{}) interface{} {
-		var p *pair
-		if val != "" {
-			p = &pair{
-				Key: datastore.NewKey(ctx, "Path", val, 0, parent.(*pair).Key),
-				Val: &path{Name: val},
-			}
-		} else {
-			p = parent.(*pair)
+		return &pair{
+			Key: datastore.NewKey(ctx, "Path", val, 0, parent.(*pair).Key),
+			Val: &path{Name: val},
 		}
-		return p
 	})
 	paths := make([]*pair, len(objs))
 	for i, obj := range objs {
