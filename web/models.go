@@ -13,7 +13,8 @@ type pair struct {
 
 // DB Key: Type: Path, String: Name, Ancestor: Path (parent of current directory)
 type path struct {
-	Name string `datastore:"name"`
+	Name   string         `datastore:"name"`
+	Parent *datastore.Key `datastore:"parent"`
 }
 
 // DB Key: Type: Bench, String: Name, Ancestor: Path (full parent path as ancestors)

@@ -57,11 +57,26 @@ func upload(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
 	// walk the tree and build all the path objects
 	objs := tree.Walk(&pair{
-		Key: rootKey(ctx),
+		Key: nil,
+		Val: &path{
+			Name:   "",
+			Parent: nil,
+		},
 	}, func(val string, parent interface{}) interface{} {
+		par := parent.(*pair)
+		var pat string
+		if par.Key == nil {
+			pat = val
+		} else {
+			pat = key2path(par.Key) + "/" + val
+		}
+
 		return &pair{
-			Key: datastore.NewKey(ctx, "Path", val, 0, parent.(*pair).Key),
-			Val: &path{Name: val},
+			Key: path2key(ctx, pat),
+			Val: &path{
+				Name:   val,
+				Parent: par.Key,
+			},
 		}
 	})
 	paths := make([]*pair, len(objs))
@@ -83,7 +98,7 @@ func upload(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	// Lets store all this data and return to the user
 	err = putAll(ctx, append(paths, newBenches...))
 	if err != nil {
-		log.Criticalf(ctx, "Error Storing Data: %s", err)
+		log.Errorf(ctx, "Error Storing Data: %s", err)
 		http.Error(w, "Problem Storing Data", http.StatusInternalServerError)
 	} else {
 		slug := strings.Join(tree.Prefix(3), "/") // <host>/<user>/<repo>

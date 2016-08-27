@@ -40,7 +40,17 @@
     <p>Donec i'm in the shizzle auctizzle maurizzle. Fo shizzle mah nizzle fo rizzle, mah home g-dizzle dizzle elizzle away i'm in the shizzle pretium . I'm in the shizzle bling bling crazy. Vestibulum in lacizzle go to hizzle maurizzle we gonna chung tristique. Nunc izzle my shizz yo mamma amet dang ultricizzle porta. Tellivizzle velizzle tortor, ultricies at, hendrerit break yo neck, yall, adipiscing we gonna chung, boom shackalack. Mammasay mammasa mamma oo sa velizzle yo, aliquizzle dizzle, pharetra non, dictizzle sed, turpis. Vivamus neque. Cras sure. Pot vitae erat ut libero commodo adipiscing. Doggy ac augue eu nibh fo mattizzle. Phasellizzle fermentum sapien nizzle own yo'. Suspendisse shiz shizzlin dizzle, sollicitudizzle sed, away id, commodo stuff, justo. Phat mofo porttitor pimpin'. Nunc shut the shizzle up, tellus my shizz ornare tempizzle, sapizzle black tincidunt for sure, gangsta fo shizzle enim izzle fo shizzle. Phasellizzle fo black, dang, the bizzle that's the shizzle, semper in, sapien. Ut dawg magna fo shizzle mah nizzle fo rizzle, mah home g-dizzle ipsizzle. Yippiyo yippiyo get down get down, cool yippiyo, pimpin' et, rutrizzle fo shizzle, velit. Mauris get down get down mauris. Sed nizzle bow wow wow sizzle amizzle risus iaculizzle fo.</p>
 
     <h2 id="index">Index</h2>
-    <p>TODO: figgen index bro</p>
+    <ul>
+      {{range .children}}
+        <li>
+          {{if .Parent}}
+            <a href="/{{.Parent.StringID}}/{{.Name}}">{{.Name}}</a>
+          {{else}}
+            <a href="/{{.Name}}">{{.Name}}</a>
+          {{end}}
+        </li>
+      {{else}} No Children Found :( {{end}}
+    </ul>
 
     <h2 id="about">About</h2>
     <p>Maecenizzle at yo. Nam eros. Doggy funky fresh, fo shizzle break it down congue consectetizzle, dope libero consequizzle purizzle, dope you son of a bizzle shiznit mi non quizzle. Crizzle faucibus shut the shizzle up. Dizzle nibh lectus, consequat sizzle, ornare my shizz, porttitor izzle, bow wow wow. Proin break it down urna. Crizzle condimentum mi gangster nibh. Pellentesque hendrerit euismizzle felis. The bizzle bling bling a erat. Etiam posuere lacinia mi. Ut maurizzle. Sizzle nisl the bizzle, euismizzle shizzle my nizzle crocodizzle, shiznit crazy, malesuada tellivizzle, nisi. Bow wow wow izzle mofo nisl.</p>
