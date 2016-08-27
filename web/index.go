@@ -4,7 +4,8 @@ import (
 	"html/template"
 	"net/http"
 
-	"google.golang.org/appengine"
+	"golang.org/x/net/context"
+
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/user"
 )
@@ -19,8 +20,7 @@ var (
 	}
 )
 
-func index(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+func index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	if forward[r.URL.Path] {
 		static.ServeHTTP(w, r)
 		return

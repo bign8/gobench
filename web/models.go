@@ -3,16 +3,12 @@ package main
 import (
 	"time"
 
-	"google.golang.org/cloud/datastore"
+	"google.golang.org/appengine/datastore"
 )
 
-type jsonBench struct {
-	Suite string  `json:"suite"`
-	Name  string  `json:"name"`
-	N     uint64  `json:"iter"`
-	NS    float64 `json:"ns/op"`
-	B     uint64  `json:"B/op"`
-	Alloc uint64  `json:"allocs/op"`
+type pair struct {
+	Key *datastore.Key
+	Val interface{}
 }
 
 // DB Key: Type: Path, String: Name, Ancestor: Path (parent of current directory)
@@ -28,11 +24,13 @@ type bench struct {
 
 // DB Key: Type: Point, String/Int: Generated, Ancestor: Bench (with full ancestor tree)
 type point struct {
-	N     uint64         `datastore:"iter"`
-	NS    float64        `datastore:"ns"`
-	B     uint64         `datastore:"b"`
-	Alloc uint64         `datastore:"allocs"`
-	Batch *datastore.Key `datastore:"batch"`
+	Suite string         `json:"suite" datastore:"-"`
+	Name  string         `json:"name" datastore:"-"`
+	N     int64          `json:"iter" datastore:"iter"`
+	NS    float64        `json:"ns/op" datastore:"ns"`
+	B     int64          `json:"B/op" datastore:"b"`
+	Alloc int64          `json:"allocs/op" datastore:"allocs"`
+	Batch *datastore.Key `json:"-" datastore:"batch"`
 }
 
 // DB Key: Type: Batch, String/Int: Generated, Ancestor: Path (top most directory of the benchmarks)
@@ -43,8 +41,7 @@ type batch struct {
 	Build    uint      `datastore:"build"`
 	BuildURL string    `datastore:"build_url"`
 	Tag      string    `datastore:"tag"`
-	Slug     string    `datastore:"slug"`
-	// Codecov other: yaml, service, flags, pr, job
+	// Codecov other: yaml, service, flags, pr, job, slug
 }
 
 type trie map[string]*trie
@@ -61,13 +58,29 @@ func (t *trie) Add(parts []string) {
 	child.Add(parts[1:])
 }
 
-func (t *trie) Prefix() []string {
-	if len(*t) != 1 {
+func (t *trie) Prefix(max int) []string {
+	if len(*t) != 1 || max == 0 {
 		return nil
 	}
 	var key string
 	for key = range *t {
 		/* nothing */
 	}
-	return append([]string{key}, (*t)[key].Prefix()...)
+	return append([]string{key}, (*t)[key].Prefix(max-1)...)
+}
+
+type walker func(val string, parent interface{}) interface{}
+
+func (t *trie) Walk(piece string, start interface{}, walk walker) []interface{} {
+	parent := walk(piece, start)
+	var res []interface{}
+	for key, value := range *t {
+		if parts := value.Walk(key, parent, walk); len(parts) != 0 {
+			res = append(res, parts...)
+		}
+	}
+	if parent != nil && piece != "" {
+		res = append(res, parent)
+	}
+	return res
 }

@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"runtime/debug"
 	"strings"
+	"time"
 
 	"golang.org/x/net/context"
 
 	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
-	"google.golang.org/cloud/datastore"
 )
 
 func init() {
@@ -23,10 +24,14 @@ func main() {
 }
 
 func route(w http.ResponseWriter, r *http.Request) {
+	ctx := appengine.NewContext(r)
+	start := time.Now()
 	defer func() {
 		if re := recover(); re != nil {
-			log.Criticalf(appengine.NewContext(r), "Problem: %#v %s", re, debug.Stack())
+			log.Criticalf(ctx, "Problem: %#v %s", re, debug.Stack())
 			http.Error(w, "FAIL WHALE!", http.StatusInternalServerError)
+		} else {
+			log.Infof(ctx, "%s %s: %s", r.Method, r.URL, time.Since(start))
 		}
 	}()
 	// TODO: defer recover here
@@ -34,9 +39,9 @@ func route(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("X-Clacks-Overhead", "GNU Terry Pratchett")
 	switch r.Method {
 	case "GET":
-		index(w, r)
+		index(ctx, w, r)
 	case "POST":
-		upload(w, r)
+		upload(ctx, w, r)
 	default:
 		// Technically http.StatusMethodNotAllowed, but less visible errors
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -48,4 +53,17 @@ func path2key(ctx context.Context, path string) (key *datastore.Key) {
 		key = datastore.NewKey(ctx, "Path", folder, 0, key)
 	}
 	return key
+}
+
+func key2path(key *datastore.Key) string {
+	var parts []string
+	for key != nil {
+		parts = append(parts, key.StringID())
+		key = key.Parent()
+	}
+	// Reverse and join
+	for i, j := 0, len(parts)-1; i < j; i, j = i+1, j-1 {
+		parts[i], parts[j] = parts[j], parts[i]
+	}
+	return strings.Join(parts, "/")
 }
