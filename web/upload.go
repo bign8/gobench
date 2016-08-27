@@ -27,7 +27,7 @@ func upload(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 			set = append(set, &ben)
 		}
 	}
-	if err != io.EOF {
+	if err != io.EOF || len(set) == 0 {
 		http.Error(w, "Invalid Data Format", http.StatusExpectationFailed)
 		return
 	}
@@ -93,9 +93,9 @@ func upload(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		log.Criticalf(ctx, "Error Storing Data: %s", err)
 		http.Error(w, "Problem Storing Data", http.StatusInternalServerError)
 	} else {
-		slug := tree.Prefix(3) // <host>/<user>/<repo>
-		log.Infof(ctx, "Full Suite Prefix: %q", strings.Join(slug, "/"))
-		fmt.Fprintf(w, "Success! Avilable at http://%s/%s\n", r.Host, strings.Join(slug, "/"))
+		slug := strings.Join(tree.Prefix(3), "/") // <host>/<user>/<repo>
+		log.Infof(ctx, "Full Suite Prefix: %q", slug)
+		fmt.Fprintf(w, "Success! Avilable at http://%s/%s\n", r.Host, slug)
 	}
 }
 

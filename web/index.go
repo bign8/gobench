@@ -36,7 +36,13 @@ func index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	u := user.Current(ctx)
 	vars := make(map[string]interface{})
 	if u != nil {
-		vars["user"] = u.String()
+		out, _ := user.LogoutURL(ctx, "/")
+		vars["user"] = map[string]string{
+			"name":   u.String(),
+			"logout": out,
+		}
+	} else {
+		vars["login"], _ = user.LoginURL(ctx, "/")
 	}
 	indexTPL.Execute(w, vars)
 }

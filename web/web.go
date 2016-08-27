@@ -31,10 +31,9 @@ func route(w http.ResponseWriter, r *http.Request) {
 			log.Criticalf(ctx, "Problem: %#v %s", re, debug.Stack())
 			http.Error(w, "FAIL WHALE!", http.StatusInternalServerError)
 		} else {
-			log.Infof(ctx, "%s %s: %s", r.Method, r.URL, time.Since(start))
+			log.Debugf(ctx, "%s %s: %s", r.Method, r.URL, time.Since(start))
 		}
 	}()
-	// TODO: defer recover here
 	// TODO: OPTIONS
 	w.Header().Add("X-Clacks-Overhead", "GNU Terry Pratchett")
 	switch r.Method {
