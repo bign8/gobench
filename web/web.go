@@ -47,7 +47,8 @@ func route(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func path2key(ctx context.Context, path string) (key *datastore.Key) {
+func path2key(ctx context.Context, path string) *datastore.Key {
+	key := rootKey(ctx)
 	for _, folder := range strings.Split(path, "/") {
 		key = datastore.NewKey(ctx, "Path", folder, 0, key)
 	}
@@ -60,9 +61,14 @@ func key2path(key *datastore.Key) string {
 		parts = append(parts, key.StringID())
 		key = key.Parent()
 	}
+	parts = parts[:len(parts)-1] // strip off root key
 	// Reverse and join
 	for i, j := 0, len(parts)-1; i < j; i, j = i+1, j-1 {
 		parts[i], parts[j] = parts[j], parts[i]
 	}
 	return strings.Join(parts, "/")
+}
+
+func rootKey(ctx context.Context) *datastore.Key {
+	return datastore.NewKey(ctx, "Root", "root", 0, nil)
 }
