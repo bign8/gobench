@@ -99,6 +99,7 @@ func upload(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	for _, pat := range set {
 		parent := datastore.NewKey(ctx, "Bench", pat.Name, 0, path2key(ctx, pat.Suite))
 		pat.Batch = batchKey
+		pat.Stamp = now
 		points = append(points, &pair{
 			Key: datastore.NewIncompleteKey(ctx, "Point", parent),
 			Val: pat,

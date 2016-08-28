@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"net/http"
+	"strings"
 
 	"golang.org/x/net/context"
 
@@ -22,26 +23,57 @@ var (
 )
 
 func index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	// TODO: fan this stuff out (datastore requests that is)
 	if forward[r.URL.Path] {
 		static.ServeHTTP(w, r)
 		return
 	}
 
-	// TODO: fan this stuff out
 	vars := make(map[string]interface{})
-	parent := path2key(ctx, r.URL.Path[1:])
+	loc := r.URL.Path[1:]
+	vars["path"] = loc
 
-	// Fetch sub-paths
-	q := datastore.NewQuery("Path").Filter("parent =", parent).Order("name")
-	var paths []path
-	_, err := q.GetAll(ctx, &paths)
-	log.Infof(ctx, "shiz: %#v %#v", parent, paths)
-	if err != nil {
-		log.Errorf(ctx, "Error w/Path query: %s", err)
+	if strings.Contains(loc, "/Bench:") {
+
+		// Fetch benchmark
+		var ben bench
+		parts := strings.Split(loc, "/Bench:")
+		key := datastore.NewKey(ctx, "Bench", parts[1], 0, path2key(ctx, parts[0]))
+		if err := datastore.Get(ctx, key, &ben); err != nil {
+			log.Errorf(ctx, "Bench: %s", err)
+		}
+		vars["bench"] = ben
+
+		// Fetch points
+		q := datastore.NewQuery("Point").Ancestor(key).Order("stamp")
+		var points []point
+		if _, err := q.GetAll(ctx, &points); err != nil {
+			log.Errorf(ctx, "Points: %s", err)
+		}
+		log.Debugf(ctx, "Points: %q", points)
+		vars["points"] = toPoint(points)
+
+	} else {
+		parent := path2key(ctx, loc)
+
+		// Fetch sub-paths
+		q := datastore.NewQuery("Path").Filter("parent =", parent).Order("name")
+		var paths []path
+		if _, err := q.GetAll(ctx, &paths); err != nil {
+			log.Errorf(ctx, "Path: %s", err)
+		}
+		vars["children"] = paths
+
+		// Fetch benchmarks
+		q = datastore.NewQuery("Bench").Ancestor(parent).Order("name")
+		var benches []bench
+		if _, err := q.GetAll(ctx, &benches); err != nil {
+			log.Errorf(ctx, "Bench: %s", err)
+		}
+		vars["benches"] = benches
 	}
-	vars["children"] = paths
 
-	// Home page handler
+	// User session handler
 	u := user.Current(ctx)
 	if u != nil {
 		out, _ := user.LogoutURL(ctx, "/")
@@ -52,6 +84,19 @@ func index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	} else {
 		vars["login"], _ = user.LoginURL(ctx, "/")
 	}
+
+	// Navigation handler
+	pat := strings.Split(loc, "/")
+	nav := make([]breadcrumb, len(pat))
+	var base string
+	for i, sec := range pat {
+		base = base + "/" + sec
+		nav[i] = breadcrumb{
+			Name: sec,
+			Link: base,
+		}
+	}
+	vars["nav"] = nav
 
 	// TODO: handle the case if nothing is found
 	// log.Errorf(ctx, "Page Not Found: %q %s", r.URL.Path, parent)

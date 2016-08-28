@@ -9,10 +9,20 @@ body {
 	font-size: 14px;
 	background-color: #fff;
 	text-align: center;
+	line-height: 1.3;
 }
 a {
 	color: #375EAB;
 	text-decoration: none;
+}
+pre {
+	background: #EFEFEF;
+	padding: 10px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	overflow-x: auto;
+	border: 1px solid #ccc;
 }
 main {
 	width: 80%;
@@ -72,4 +82,12 @@ footer a {
 }
 footer a:last-child {
 	float: right;
+}
+.crumbs {
+	min-height: 20px;
+	margin-bottom: 20px;
+	background-color: #eee;
+	padding: 9px;
+	border-radius: 3px;
+	line-height: 20px;
 }

@@ -33,37 +33,120 @@
   </header>
 
   <main>
-    <h1>GoBench!</h1>
-
-    <p>Lorem ipsum dolor break it down amizzle, consectetizzle adipiscing elit. Uhuh ... yih! sapizzle velit, crackalackin tellivizzle, suscipizzle doggy, rizzle vizzle, boom shackalack. Pellentesque egizzle mofo. Sed erizzle. Fusce bling bling dolizzle dapibizzle check out this tempizzle you son of a bizzle. Mauris pellentesque nibh fo own yo'. Yippiyo izzle tortizzle. Pellentesque uhuh ... yih! rhoncizzle owned. In shiz habitasse ma nizzle dictumst. Crunk dapibizzle. Break yo neck, yall mah nizzle boofron, pretizzle crazy, mattizzle izzle, eleifend vitae, nunc. Get down get down suscipizzle. Integer sempizzle velit sed purus.</p>
-
-    <p>Donec i'm in the shizzle auctizzle maurizzle. Fo shizzle mah nizzle fo rizzle, mah home g-dizzle dizzle elizzle away i'm in the shizzle pretium . I'm in the shizzle bling bling crazy. Vestibulum in lacizzle go to hizzle maurizzle we gonna chung tristique. Nunc izzle my shizz yo mamma amet dang ultricizzle porta. Tellivizzle velizzle tortor, ultricies at, hendrerit break yo neck, yall, adipiscing we gonna chung, boom shackalack. Mammasay mammasa mamma oo sa velizzle yo, aliquizzle dizzle, pharetra non, dictizzle sed, turpis. Vivamus neque. Cras sure. Pot vitae erat ut libero commodo adipiscing. Doggy ac augue eu nibh fo mattizzle. Phasellizzle fermentum sapien nizzle own yo'. Suspendisse shiz shizzlin dizzle, sollicitudizzle sed, away id, commodo stuff, justo. Phat mofo porttitor pimpin'. Nunc shut the shizzle up, tellus my shizz ornare tempizzle, sapizzle black tincidunt for sure, gangsta fo shizzle enim izzle fo shizzle. Phasellizzle fo black, dang, the bizzle that's the shizzle, semper in, sapien. Ut dawg magna fo shizzle mah nizzle fo rizzle, mah home g-dizzle ipsizzle. Yippiyo yippiyo get down get down, cool yippiyo, pimpin' et, rutrizzle fo shizzle, velit. Mauris get down get down mauris. Sed nizzle bow wow wow sizzle amizzle risus iaculizzle fo.</p>
-
-    <h2 id="index">Index</h2>
-    {{with .children}}
-      <ul>
-        {{range .}}
-          <li>
-            {{if .Parent}}
-              <a href="/{{.Parent.StringID}}/{{.Name}}">{{.Name}}</a>
-            {{else}}
-              <a href="/{{.Name}}">{{.Name}}</a>
-            {{end}}
-          </li>
-        {{end}}
-      </ul>
+    {{if not .path}}
+      <section>
+        <h1>GoBench!</h1>
+        <p>Lorem ipsum dolor break it down amizzle, consectetizzle adipiscing elit. Uhuh ... yih! sapizzle velit, crackalackin tellivizzle, suscipizzle doggy, rizzle vizzle, boom shackalack. Pellentesque egizzle mofo. Sed erizzle. Fusce bling bling dolizzle dapibizzle check out this tempizzle you son of a bizzle. Mauris pellentesque nibh fo own yo'. Yippiyo izzle tortizzle. Pellentesque uhuh ... yih! rhoncizzle owned. In shiz habitasse ma nizzle dictumst. Crunk dapibizzle. Break yo neck, yall mah nizzle boofron, pretizzle crazy, mattizzle izzle, eleifend vitae, nunc. Get down get down suscipizzle. Integer sempizzle velit sed purus.</p>
+        <p>Donec i'm in the shizzle auctizzle maurizzle. Fo shizzle mah nizzle fo rizzle, mah home g-dizzle dizzle elizzle away i'm in the shizzle pretium . I'm in the shizzle bling bling crazy. Vestibulum in lacizzle go to hizzle maurizzle we gonna chung tristique. Nunc izzle my shizz yo mamma amet dang ultricizzle porta. Tellivizzle velizzle tortor, ultricies at, hendrerit break yo neck, yall, adipiscing we gonna chung, boom shackalack. Mammasay mammasa mamma oo sa velizzle yo, aliquizzle dizzle, pharetra non, dictizzle sed, turpis. Vivamus neque. Cras sure. Pot vitae erat ut libero commodo adipiscing. Doggy ac augue eu nibh fo mattizzle. Phasellizzle fermentum sapien nizzle own yo'. Suspendisse shiz shizzlin dizzle, sollicitudizzle sed, away id, commodo stuff, justo. Phat mofo porttitor pimpin'. Nunc shut the shizzle up, tellus my shizz ornare tempizzle, sapizzle black tincidunt for sure, gangsta fo shizzle enim izzle fo shizzle. Phasellizzle fo black, dang, the bizzle that's the shizzle, semper in, sapien. Ut dawg magna fo shizzle mah nizzle fo rizzle, mah home g-dizzle ipsizzle. Yippiyo yippiyo get down get down, cool yippiyo, pimpin' et, rutrizzle fo shizzle, velit. Mauris get down get down mauris. Sed nizzle bow wow wow sizzle amizzle risus iaculizzle fo.</p>
+      </section>
     {{else}}
-      No Children Found :(
+      <div class="crumbs">
+        Location:
+        {{range .nav}}
+          <a href="{{.Link}}">/{{.Name}}</a>
+        {{end}}
+      </div>
     {{end}}
 
-    <h2 id="about">About</h2>
-    <p>Maecenizzle at yo. Nam eros. Doggy funky fresh, fo shizzle break it down congue consectetizzle, dope libero consequizzle purizzle, dope you son of a bizzle shiznit mi non quizzle. Crizzle faucibus shut the shizzle up. Dizzle nibh lectus, consequat sizzle, ornare my shizz, porttitor izzle, bow wow wow. Proin break it down urna. Crizzle condimentum mi gangster nibh. Pellentesque hendrerit euismizzle felis. The bizzle bling bling a erat. Etiam posuere lacinia mi. Ut maurizzle. Sizzle nisl the bizzle, euismizzle shizzle my nizzle crocodizzle, shiznit crazy, malesuada tellivizzle, nisi. Bow wow wow izzle mofo nisl.</p>
+    {{if .bench}}
+      <section>
+        <h2 id="bench">Benchmark: {{.bench.Name}}</h2>
+        <p>First Seen: {{.bench.Seen.Format "Jan 2 2006 3:04PM MST"}}</p>
+        <p>Datapoints: {{len .points}}</p>
 
-    <p>Da bomb facilisi. Etizzle faucibus pharetra shizzle my nizzle crocodizzle. Vestibulizzle vulputate crunk id gizzle. Crizzle that's the shizzle odio izzle ipsizzle. Curabitizzle break yo neck, yall check it out vizzle gizzle. Cras laoreet, mi bizzle eleifend tincidunt, dolizzle sem sheezy orci, eu placerat gangster mauris phat things. Etizzle uhuh ... yih!, lectizzle et aliquizzle cool, tellizzle nisl yo mamma orci, a fo nulla mi at hizzle. Suspendisse we gonna chung mattizzle fo shizzle. In pulvinizzle aliquizzle ma nizzle. Praesent leo enizzle, tempor nizzle, gangster nec, hizzle pot, sizzle. Mauris ma nizzle massa quis gangsta blandit dictizzle. Sure ullamcorper turpis at sizzle tincidunt shut the shizzle up. Phasellizzle quis maurizzle. Ghetto lacinia. Shizzlin dizzle fermentizzle shit enim. Pellentesque mi. Lorem ipsum dolizzle we gonna chung mah nizzle, consectetuer fo shizzle crazy. Pot urna arcu, convallizzle dawg, sagittizzle a, pharetra eu, neque. Boom shackalack ipsizzle dolor sit amet, consectetizzle dope elit.</p>
+        {{if .points}}
+          <div id="benchN"></div>
+          <div id="benchNS"></div>
+          <div id="benchB"></div>
+          <div id="benchAlloc"></div>
 
-    <p>Sizzle sheezy the bizzle. Phasellizzle gangsta, nulla shut the shizzle up vehicula fo shizzle my nizzle, velizzle erat convallizzle quam, boom shackalack fo shizzle sapizzle shizznit go to hizzle mofo. Pot vestibulum laorizzle phat. Etiam rhoncus tempizzle fizzle. Cras gangster ornare things. Vestibulum bow wow wow quizzle, sure a, pot izzle, faucibizzle rizzle, urna. Vivamizzle eleifend euismod sapien. Maecenizzle tincidunt brizzle things. Yippiyo ut tortor eget erat for sure for sure. Mofo mollizzle da bomb erizzle. Dope egestizzle, metus a pizzle sollicitudizzle, stuff owned aliquet urna, vulputate tellivizzle break it down purizzle izzle velizzle. Suspendisse tristique enim dawg ghetto. Yippiyo dawg ligula et gizzle shit euismod. Fizzle izzle black. Nam velit. Suspendisse ac nibh.</p>
+          <!-- Yes I know this is bad TODO (bign8): fix this later -->
+          <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+          <script>
+            var data = {{.points}};
 
-    <p>Aliquam ultrices, sem black go to hizzle posuere, check out this shizzlin dizzle tempizzle dizzle, phat mollizzle magna justo boofron est. Crunk placerizzle, libero elementizzle euismod fermentizzle, mofo mauris gravida dope, the bizzle vehicula break it down black sed dope. Morbi crazy you son of a bizzle, fo shizzle mah nizzle fo rizzle, mah home g-dizzle check out this, malesuada volutpat, pulvinizzle fo shizzle, pede. Izzle urna. Curabitur placerat, mofo quizzle cursus blandizzle, daahng dawg augue yippiyo dui, own yo' bibendizzle pede ipsizzle non eros. Its fo rizzle break it down. Nam sizzle get down get down break yo neck, yall fizzle. Integizzle fo, turpizzle i saw beyonces tizzles and my pizzle went crizzle auctizzle sollicitudin, pede shiz sempizzle shit, own yo' gangster laorizzle dizzle felizzle izzle dang. Cras izzle boofron. In hac habitasse platea dictumst. Daahng dawg tortizzle crackalackin, faucibus tellivizzle, semper pimpin', dope ac, crackalackin. Cool tellus that's the shizzle, molestie vel, ultricizzle quis, euismizzle non, leo. Uhuh ... yih! izzle magna izzle ass pulvinizzle vulputate. Lorizzle i'm in the shizzle dolizzle sit boofron, fo shizzle my nizzle adipiscing own yo'.</p>
+            function unpack(rows, key) {
+              return rows.map(function(row) { return row[key]; });
+            }
+
+            var stamps = unpack(data, "stamp");
+            // stamps = stamps.map() convert to yyyy-mm-dd HH:MM:SS.ssssss format
+            Plotly.plot("benchN", {
+              x: stamps,
+              y: unpack(data, "n"),
+            }, {
+              title: "Number of Iterations",
+            });
+            Plotly.plot("benchNS", {
+              x: stamps,
+              y: unpack(data, "ns"),
+            }, {
+              title: "Nanoseconds per Operation",
+            });
+            Plotly.plot("benchB", {
+              x: stamps,
+              y: unpack(data, "b"),
+            }, {
+              title: "Bytes per Operation",
+            });
+            Plotly.plot("benchAlloc", {
+              x: stamps,
+              y: unpack(data, "alloc"),
+            }, {
+              title: "Allocations per Operation",
+            });
+          </script>
+        {{else}}
+          <!-- No Points :( -->
+        {{end}}
+      </section>
+    {{else}}
+      <!-- No Benchmark Found :( -->
+    {{end}}
+
+    {{if .benches}}
+      {{$path := .path}}
+      <section>
+        <h2 id="bench">Benchmarks</h2>
+        <ul>
+          {{range .benches}}
+            <li>
+              <a href="/{{$path}}/Bench:{{.Name}}">{{.Name}}</a>
+            </li>
+          {{end}}
+      </section>
+    {{else}}
+      <!-- No Benchmarks Found :( -->
+    {{end}}
+
+    {{with .children}}
+      <section>
+        <h2 id="index">Index</h2>
+        <ul>
+          {{range .}}
+            <li>
+              {{if .Parent}}
+                <a href="/{{.Parent.StringID}}/{{.Name}}">{{.Name}}</a>
+              {{else}}
+                <a href="/{{.Name}}">{{.Name}}</a>
+              {{end}}
+            </li>
+          {{end}}
+        </ul>
+      </section>
+    {{else}}
+      <!-- No Children Found :( -->
+    {{end}}
+
+    {{if not .path}}
+      <section>
+        <h2 id="about">About</h2>
+        <p>Maecenizzle at yo. Nam eros. Doggy funky fresh, fo shizzle break it down congue consectetizzle, dope libero consequizzle purizzle, dope you son of a bizzle shiznit mi non quizzle. Crizzle faucibus shut the shizzle up. Dizzle nibh lectus, consequat sizzle, ornare my shizz, porttitor izzle, bow wow wow. Proin break it down urna. Crizzle condimentum mi gangster nibh. Pellentesque hendrerit euismizzle felis. The bizzle bling bling a erat. Etiam posuere lacinia mi. Ut maurizzle. Sizzle nisl the bizzle, euismizzle shizzle my nizzle crocodizzle, shiznit crazy, malesuada tellivizzle, nisi. Bow wow wow izzle mofo nisl.</p>
+        <p>Da bomb facilisi. Etizzle faucibus pharetra shizzle my nizzle crocodizzle. Vestibulizzle vulputate crunk id gizzle. Crizzle that's the shizzle odio izzle ipsizzle. Curabitizzle break yo neck, yall check it out vizzle gizzle. Cras laoreet, mi bizzle eleifend tincidunt, dolizzle sem sheezy orci, eu placerat gangster mauris phat things. Etizzle uhuh ... yih!, lectizzle et aliquizzle cool, tellizzle nisl yo mamma orci, a fo nulla mi at hizzle. Suspendisse we gonna chung mattizzle fo shizzle. In pulvinizzle aliquizzle ma nizzle. Praesent leo enizzle, tempor nizzle, gangster nec, hizzle pot, sizzle. Mauris ma nizzle massa quis gangsta blandit dictizzle. Sure ullamcorper turpis at sizzle tincidunt shut the shizzle up. Phasellizzle quis maurizzle. Ghetto lacinia. Shizzlin dizzle fermentizzle shit enim. Pellentesque mi. Lorem ipsum dolizzle we gonna chung mah nizzle, consectetuer fo shizzle crazy. Pot urna arcu, convallizzle dawg, sagittizzle a, pharetra eu, neque. Boom shackalack ipsizzle dolor sit amet, consectetizzle dope elit.</p>
+        <p>Sizzle sheezy the bizzle. Phasellizzle gangsta, nulla shut the shizzle up vehicula fo shizzle my nizzle, velizzle erat convallizzle quam, boom shackalack fo shizzle sapizzle shizznit go to hizzle mofo. Pot vestibulum laorizzle phat. Etiam rhoncus tempizzle fizzle. Cras gangster ornare things. Vestibulum bow wow wow quizzle, sure a, pot izzle, faucibizzle rizzle, urna. Vivamizzle eleifend euismod sapien. Maecenizzle tincidunt brizzle things. Yippiyo ut tortor eget erat for sure for sure. Mofo mollizzle da bomb erizzle. Dope egestizzle, metus a pizzle sollicitudizzle, stuff owned aliquet urna, vulputate tellivizzle break it down purizzle izzle velizzle. Suspendisse tristique enim dawg ghetto. Yippiyo dawg ligula et gizzle shit euismod. Fizzle izzle black. Nam velit. Suspendisse ac nibh.</p>
+        <p>Aliquam ultrices, sem black go to hizzle posuere, check out this shizzlin dizzle tempizzle dizzle, phat mollizzle magna justo boofron est. Crunk placerizzle, libero elementizzle euismod fermentizzle, mofo mauris gravida dope, the bizzle vehicula break it down black sed dope. Morbi crazy you son of a bizzle, fo shizzle mah nizzle fo rizzle, mah home g-dizzle check out this, malesuada volutpat, pulvinizzle fo shizzle, pede. Izzle urna. Curabitur placerat, mofo quizzle cursus blandizzle, daahng dawg augue yippiyo dui, own yo' bibendizzle pede ipsizzle non eros. Its fo rizzle break it down. Nam sizzle get down get down break yo neck, yall fizzle. Integizzle fo, turpizzle i saw beyonces tizzles and my pizzle went crizzle auctizzle sollicitudin, pede shiz sempizzle shit, own yo' gangster laorizzle dizzle felizzle izzle dang. Cras izzle boofron. In hac habitasse platea dictumst. Daahng dawg tortizzle crackalackin, faucibus tellivizzle, semper pimpin', dope ac, crackalackin. Cool tellus that's the shizzle, molestie vel, ultricizzle quis, euismizzle non, leo. Uhuh ... yih! izzle magna izzle ass pulvinizzle vulputate. Lorizzle i'm in the shizzle dolizzle sit boofron, fo shizzle my nizzle adipiscing own yo'.</p>
+      </section>
+    {{end}}
   </main>
 
   <footer>

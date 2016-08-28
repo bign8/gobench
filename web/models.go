@@ -25,6 +25,7 @@ type bench struct {
 
 // DB Key: Type: Point, String/Int: Generated, Ancestor: Bench (with full ancestor tree)
 type point struct {
+	Stamp time.Time      `json:"-" datastore:"stamp"`
 	Suite string         `json:"suite" datastore:"-"`
 	Name  string         `json:"name" datastore:"-"`
 	N     int64          `json:"iter" datastore:"iter"`
@@ -80,4 +81,31 @@ func (t *trie) Walk(start interface{}, walk walker) []interface{} {
 		res = append(res, value.Walk(parent, walk)...)
 	}
 	return res
+}
+
+type breadcrumb struct {
+	Name string
+	Link string
+}
+
+type realPoint struct {
+	Stamp time.Time `json:"stamp"`
+	N     int64     `json:"iter"`
+	NS    float64   `json:"ns"`
+	B     int64     `json:"b"`
+	Alloc int64     `json:"allocs"`
+}
+
+func toPoint(pts []point) []realPoint {
+	out := make([]realPoint, len(pts))
+	for i, pt := range pts {
+		out[i] = realPoint{
+			Stamp: pt.Stamp,
+			N:     pt.N,
+			NS:    pt.NS,
+			B:     pt.B,
+			Alloc: pt.Alloc,
+		}
+	}
+	return out
 }

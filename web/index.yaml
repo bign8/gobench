@@ -10,7 +10,17 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Bench
+  ancestor: yes
+  properties:
+  - name: name
+
 - kind: Path
   properties:
   - name: parent
   - name: name
+
+- kind: Point
+  ancestor: yes
+  properties:
+  - name: stamp
