@@ -18,6 +18,7 @@ var (
 	forward  = map[string]bool{
 		"/css.css":     true,
 		"/js.js":       true,
+		"/plotly.js":   true,
 		"/favicon.ico": true,
 	}
 )

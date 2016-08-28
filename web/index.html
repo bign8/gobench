@@ -61,7 +61,7 @@
           <div id="benchAlloc"></div>
 
           <!-- Yes I know this is bad TODO (bign8): fix this later -->
-          <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+          <script src="/plotly.js"></script>
           <script>
             var data = {{.points}};
 
@@ -69,30 +69,39 @@
               return rows.map(function(row) { return row[key]; });
             }
 
-            var stamps = unpack(data, "stamp");
-            // stamps = stamps.map() convert to yyyy-mm-dd HH:MM:SS.ssssss format
-            Plotly.plot("benchN", {
-              x: stamps,
-              y: unpack(data, "n"),
-            }, {
+            function pad(num) {
+              if (num < 10) num = "0" + num;
+              return num;
+            }
+
+            // convert to yyyy-mm-dd HH:MM:SS.ssssss format
+            function fmt(stamp) {
+              var s = new Date(stamp);
+              var YMD = s.getFullYear() + "-" + pad(s.getMonth()) + "-" + pad(s.getDate());
+              var HMS = pad(s.getHours()) + ":" + pad(s.getMinutes()) + ":" + pad(s.getSeconds());
+              return YMD + " " + HMS;
+            }
+
+            var stamps = unpack(data, "stamp").map(fmt);
+
+            function set(name) {
+              return [{
+                x: stamps,
+                y: unpack(data, name),
+                // type: 'scatter',
+              }];
+            }
+
+            Plotly.plot("benchN", set("iter"), {
               title: "Number of Iterations",
             });
-            Plotly.plot("benchNS", {
-              x: stamps,
-              y: unpack(data, "ns"),
-            }, {
+            Plotly.plot("benchNS", set("ns"), {
               title: "Nanoseconds per Operation",
             });
-            Plotly.plot("benchB", {
-              x: stamps,
-              y: unpack(data, "b"),
-            }, {
+            Plotly.plot("benchB", set("b"), {
               title: "Bytes per Operation",
             });
-            Plotly.plot("benchAlloc", {
-              x: stamps,
-              y: unpack(data, "alloc"),
-            }, {
+            Plotly.plot("benchAlloc", set("allocs"), {
               title: "Allocations per Operation",
             });
           </script>
