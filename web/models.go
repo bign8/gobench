@@ -39,7 +39,7 @@ type batch struct {
 	Stamp    time.Time `datastore:"stamp"`
 	Branch   string    `datastore:"branch"`
 	Commit   string    `datastore:"commit"`
-	Build    uint      `datastore:"build"`
+	Build    string    `datastore:"build"`
 	BuildURL string    `datastore:"build_url"`
 	Tag      string    `datastore:"tag"`
 	// Codecov other: yaml, service, flags, pr, job, slug

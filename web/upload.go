@@ -31,17 +31,27 @@ func upload(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Data Format", http.StatusExpectationFailed)
 		return
 	}
+	now := time.Now()
 
 	// TODO (bign8): place batch metadata and get batch key
-	var batchKey *datastore.Key
+	query := r.URL.Query()
+	batchKey, err := datastore.Put(ctx, datastore.NewIncompleteKey(ctx, "Batch", nil), &batch{
+		Stamp:    now,
+		Branch:   query.Get("branch"),
+		Commit:   query.Get("commit"),
+		Build:    query.Get("build"),
+		BuildURL: query.Get("build_url"),
+		Tag:      query.Get("tag"),
+	})
+	if err != nil {
+		log.Errorf(ctx, "Batch Put: %s", err)
+	}
 
 	// Determine set of benches needed to be stored
-	now := time.Now()
 	tree := make(trie)
 	benches := make([]*pair, 0, len(set))
 	for _, ben := range set {
 		tree.Add(strings.Split(ben.Suite, "/"))
-		ben.Batch = batchKey
 		benches = append(benches, &pair{
 			Key: datastore.NewKey(ctx, "Bench", ben.Name, 0, path2key(ctx, ben.Suite)),
 			Val: &bench{Name: ben.Name, Seen: now},
@@ -88,6 +98,7 @@ func upload(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	points := make([]*pair, 0, len(set))
 	for _, pat := range set {
 		parent := datastore.NewKey(ctx, "Bench", pat.Name, 0, path2key(ctx, pat.Suite))
+		pat.Batch = batchKey
 		points = append(points, &pair{
 			Key: datastore.NewIncompleteKey(ctx, "Point", parent),
 			Val: pat,
