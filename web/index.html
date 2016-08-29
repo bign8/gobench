@@ -30,6 +30,12 @@
         </li>
       </ul>
     </nav>
+    {{if .points}}
+      <script>
+        var GB = GB || {};
+        GB.points = {{.points}};
+      </script>
+    {{end}}
   </header>
 
   <main>
@@ -59,52 +65,6 @@
           <div id="benchNS"></div>
           <div id="benchB"></div>
           <div id="benchAlloc"></div>
-
-          <!-- Yes I know this is bad TODO (bign8): fix this later -->
-          <script src="/plotly.js"></script>
-          <script>
-            var data = {{.points}};
-
-            function unpack(rows, key) {
-              return rows.map(function(row) { return row[key]; });
-            }
-
-            function pad(num) {
-              if (num < 10) num = "0" + num;
-              return num;
-            }
-
-            // convert to yyyy-mm-dd HH:MM:SS.ssssss format
-            function fmt(stamp) {
-              var s = new Date(stamp);
-              var YMD = s.getFullYear() + "-" + pad(s.getMonth()) + "-" + pad(s.getDate());
-              var HMS = pad(s.getHours()) + ":" + pad(s.getMinutes()) + ":" + pad(s.getSeconds());
-              return YMD + " " + HMS;
-            }
-
-            var stamps = unpack(data, "stamp").map(fmt);
-
-            function set(name) {
-              return [{
-                x: stamps,
-                y: unpack(data, name),
-                // type: 'scatter',
-              }];
-            }
-
-            Plotly.plot("benchN", set("iter"), {
-              title: "Number of Iterations",
-            });
-            Plotly.plot("benchNS", set("ns"), {
-              title: "Nanoseconds per Operation",
-            });
-            Plotly.plot("benchB", set("b"), {
-              title: "Bytes per Operation",
-            });
-            Plotly.plot("benchAlloc", set("allocs"), {
-              title: "Allocations per Operation",
-            });
-          </script>
         {{else}}
           <!-- No Points :( -->
         {{end}}
@@ -166,5 +126,9 @@
       <a href="#">Back to top</a>
     </nav>
   </footer>
+
+  {{if .points}}
+    <script src="/plotly.js"></script>
+  {{end}}
   <script src="/js.js"></script>
 </body>
