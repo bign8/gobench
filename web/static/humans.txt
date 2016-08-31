@@ -1,0 +1,17 @@
+/* TEAM */
+Name: Nathan Woods
+Site: http://bign8.info/
+Twitter: @bignatewoods
+Location: Bozeman, Montana, USA
+
+/* THANKS */
+App Engine: https://cloud.google.com/appengine/
+Go: https://golang.org/
+plotly.js: https://plot.ly/javascript/
+Atom: https://atom.io/
+
+/* SITE */
+Last update: 2016/08/30
+Standards: HTML5, CSS3
+Components: plot.ly
+Software: Atom

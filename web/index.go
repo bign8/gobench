@@ -20,6 +20,8 @@ var (
 		"/js.js":       true,
 		"/plotly.js":   true,
 		"/favicon.ico": true,
+		"/humans.txt":  true,
+		"/robots.txt":  true,
 	}
 )
 
