@@ -7,6 +7,8 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/mjibson/appstats"
+
 	"golang.org/x/net/context"
 
 	"google.golang.org/appengine"
@@ -15,15 +17,14 @@ import (
 )
 
 func init() {
-	http.HandleFunc("/", route)
+	http.Handle("/", appstats.NewHandler(route))
 }
 
 func main() {
 	appengine.Main()
 }
 
-func route(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+func route(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	defer func() {
 		if re := recover(); re != nil {
