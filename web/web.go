@@ -34,16 +34,23 @@ func route(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 			log.Debugf(ctx, "%s %s: %s", r.Method, r.URL, time.Since(start))
 		}
 	}()
-	// TODO: OPTIONS
+
 	w.Header().Add("X-Clacks-Overhead", "GNU Terry Pratchett")
+	if origin := r.Header.Get("Origin"); origin != "" {
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+	}
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, HEAD")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding")
+
 	switch r.Method {
-	case "GET":
+	case http.MethodGet:
 		index(ctx, w, r)
-	case "POST":
+	case http.MethodPost:
 		upload(ctx, w, r)
+	case http.MethodOptions: // NO-OP
+	case http.MethodHead: // NO-OP
 	default:
-		// Technically http.StatusMethodNotAllowed, but less visible errors
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Error(w, "Method \""+r.Method+"\" not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
