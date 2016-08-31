@@ -56,3 +56,19 @@ if (window.requestAnimationFrame) {
 } else {
   setTimeout(GB.run, 16);
 }
+
+// // Having fun with icon force refreshing (thanks dart's brower plugin)
+// var scripts = document.getElementsByTagName("link");
+// var length = scripts.length;
+// for (var i = 0; i < length; ++i) {
+//   if (scripts[i].rel == "icon") {
+//     if (scripts[i].href && scripts[i].href != '') {
+//       var script = document.createElement('link');
+//       script.rel = "icon";
+//       script.href = scripts[i].href + "?v=" + Date.now();
+//       var parent = scripts[i].parentNode;
+//       document.currentScript = script;
+//       parent.replaceChild(script, scripts[i]);
+//     }
+//   }
+// }

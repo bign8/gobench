@@ -26,7 +26,7 @@ var (
 func index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	// TODO: fan this stuff out (datastore requests that is)
 	if forward[r.URL.Path] {
-		static.ServeHTTP(w, r)
+		static.ServeHTTP(w, r) // NOTE: appengine automagically gzips content on supporting clients
 		return
 	}
 
@@ -41,7 +41,7 @@ func index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(loc, "/Bench:")
 		key := datastore.NewKey(ctx, "Bench", parts[1], 0, path2key(ctx, parts[0]))
 		if err := datastore.Get(ctx, key, &ben); err != nil {
-			log.Errorf(ctx, "Bench: %s", err)
+			log.Warningf(ctx, "Bench: %s", err)
 		}
 		vars["bench"] = ben
 
@@ -49,9 +49,8 @@ func index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		q := datastore.NewQuery("Point").Ancestor(key).Order("stamp")
 		var points []point
 		if _, err := q.GetAll(ctx, &points); err != nil {
-			log.Errorf(ctx, "Points: %s", err)
+			log.Warningf(ctx, "Points: %s", err)
 		}
-		log.Debugf(ctx, "Points: %q", points)
 		vars["points"] = toPoint(points)
 
 	} else {
@@ -61,17 +60,19 @@ func index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		q := datastore.NewQuery("Path").Filter("parent =", parent).Order("name")
 		var paths []path
 		if _, err := q.GetAll(ctx, &paths); err != nil {
-			log.Errorf(ctx, "Path: %s", err)
+			log.Warningf(ctx, "Path: %s", err)
 		}
 		vars["children"] = paths
 
 		// Fetch benchmarks
-		q = datastore.NewQuery("Bench").Ancestor(parent).Order("name")
-		var benches []bench
-		if _, err := q.GetAll(ctx, &benches); err != nil {
-			log.Errorf(ctx, "Bench: %s", err)
+		if parent != nil {
+			q = datastore.NewQuery("Bench").Ancestor(parent).Order("name")
+			var benches []bench
+			if _, err := q.GetAll(ctx, &benches); err != nil {
+				log.Warningf(ctx, "Benches: %s", err)
+			}
+			vars["benches"] = benches
 		}
-		vars["benches"] = benches
 	}
 
 	// User session handler
