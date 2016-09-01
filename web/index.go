@@ -43,6 +43,10 @@ func index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(loc, "/Bench:")
 		key := datastore.NewKey(ctx, "Bench", parts[1], 0, path2key(ctx, parts[0]))
 		if err := datastore.Get(ctx, key, &ben); err != nil {
+			if err == datastore.ErrNoSuchEntity {
+				http.Redirect(w, r, "..", http.StatusSeeOther)
+				return
+			}
 			log.Warningf(ctx, "Bench: %s", err)
 		}
 		vars["bench"] = ben
@@ -103,6 +107,7 @@ func index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	vars["nav"] = nav
 
 	// TODO: handle the case if nothing is found
+	// TODO: otherwise cache response (probably a wrapper function)
 	// log.Errorf(ctx, "Page Not Found: %q %s", r.URL.Path, parent)
 	// http.NotFound(w, r)
 	// return
