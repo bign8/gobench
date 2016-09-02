@@ -1,4 +1,6 @@
 # GoBench
+[![Build Status](https://travis-ci.org/bign8/gobench.svg)](https://travis-ci.org/bign8/gobench)
+
 Converts go unit test files to usable and trackable format.
 
 ## Usage

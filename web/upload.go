@@ -27,8 +27,13 @@ func upload(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 			set = append(set, &ben)
 		}
 	}
-	if err != io.EOF || len(set) == 0 {
+	if err != io.EOF {
 		http.Error(w, "Invalid Data Format", http.StatusExpectationFailed)
+		return
+	}
+	if len(set) == 0 {
+		w.WriteHeader(http.StatusNonAuthoritativeInfo)
+		w.Write([]byte("Empty Data Set"))
 		return
 	}
 	now := time.Now()

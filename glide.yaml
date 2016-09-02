@@ -1,0 +1,11 @@
+package: github.com/bign8/gobench
+import:
+- package: github.com/mjibson/appstats
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: google.golang.org/appengine
+  subpackages:
+  - datastore
+  - log
+  - user
