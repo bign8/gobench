@@ -1,0 +1,13 @@
+language: go
+
+go:
+  - 1.6
+  - 1.7
+
+script:
+  - echo $TRAVIS_GO_VERSION
+  - go test -v -bench=. -benchmem ./... | tee test.out
+  - go run main.go -in test.out
+
+notifications:
+  email: false
