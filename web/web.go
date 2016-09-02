@@ -1,6 +1,6 @@
 package main
 
-//go:generate appcfg.py update .
+//go:generate appcfg.py update -A gobench-141403 -V 1 .
 
 import (
 	"net/http"

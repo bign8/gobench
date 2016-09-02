@@ -10,6 +10,9 @@ cache:
   directories:
   - vendor
 
+before_install:
+  - openssl aes-256-cbc -K $encrypted_18ef70bdcdac_key -iv $encrypted_18ef70bdcdac_iv -in secret.json.enc -out secret.json -d
+
 install:
   - mkdir $GOPATH/bin
   - curl https://glide.sh/get | sh
@@ -18,6 +21,18 @@ install:
 script:
   - go test -v -bench=. -benchmem $(glide nv) | tee test.out
   - go run main.go -in test.out
+
+# deploy:
+#   provider: gae
+#   # Skip cleanup so api_key.py and vendored dependencies are still there
+#   skip_cleanup: true
+#   keyfile: secret.json
+#   project: gobench-141403
+#   config: web/app.yaml
+#   default: true
+#   verbosity: debug
+#   on:
+#     all_branches: true
 
 notifications:
   email: false
