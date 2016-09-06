@@ -1,0 +1,118 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <title>Go Bench</title>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link type="image/x-icon" rel="icon" href="/favicon.ico?v=1">
+  <link type="text/plain" rel="author" href="/humans.txt" />
+  <link type="text/css" rel="stylesheet" href="/css.css">
+  {{- if .points -}}
+  <script>
+    var GB = GB || {};
+    GB.points = {{.points}};
+  </script>
+  {{- end}}
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/">GoBench</a>
+      <a href="/#index">Index</a>
+      <a href="/#about">About</a>
+      {{with .user -}}
+        <a href="{{.logout}}">Logout {{.name}}</a>
+      {{- else -}}
+        <a href="{{.login}}">Login</a>
+      {{- end}}
+    </nav>
+  </header>
+  <main>
+
+    {{- if not .path}}
+    <section>
+      <h1>Welcome to GoBench!</h1>
+      <p>Have you ever wanted to track your go benchmarks over time?  With a few simple commands to add to your build script, you can now track various code benchmards throughout the software development cycle.</p>
+      <pre>go get github.com/bign8/gobench
+go test -bench=. -benchmem ./... | gobench -host=http://bench.bign8.info</pre>
+    </section>
+    {{- else}}
+    <div class="crumbs">
+      Location:
+      {{range $i, $e := .nav -}}
+        <a href="{{$e.Link}}">{{if $i}}/{{end}}{{$e.Name}}</a>
+      {{- end}}
+    </div>
+    {{- end -}}
+
+    {{- if .bench -}}
+    <section>
+      <h2 id="bench">Benchmark: {{.bench.Name}}</h2>
+      <p>First Seen: {{.bench.Seen.Format "Jan 2 2006 3:04PM MST"}}</p>
+      <p>Datapoints: {{len .points}}</p>
+
+      {{- if .points}}
+      <div id="benchN"></div>
+      <div id="benchNS"></div>
+      <div id="benchB"></div>
+      <div id="benchAlloc"></div>
+      {{- end}}
+    </section>
+    {{- end -}}
+
+    {{- if .benches -}}
+    {{$path := .path}}
+    <section>
+      <h2 id="bench">Benchmarks</h2>
+      <ul>
+        {{- range .benches}}
+          <li>
+            <a href="/{{$path}}/Bench:{{.Name}}">{{.Name}}</a>
+          </li>
+        {{- end}}
+      </ul>
+    </section>
+    {{- end -}}
+
+    {{- with .children}}
+    <section>
+      <h2 id="index">Index</h2>
+      <ul>
+        {{- range .}}
+        <li>
+          {{if .Parent -}}
+            <a href="/{{.Parent.StringID}}/{{.Name}}">{{.Name}}</a>
+          {{- else -}}
+            <a href="/{{.Name}}">{{.Name}}</a>
+          {{- end}}
+        </li>
+        {{- end}}
+      </ul>
+    </section>
+    {{- end -}}
+
+    {{- if not .path}}
+    <section>
+      <h2 id="about">About</h2>
+      <p>Maecenizzle at yo. Nam eros. Doggy funky fresh, fo shizzle break it down congue consectetizzle, dope libero consequizzle purizzle, dope you son of a bizzle shiznit mi non quizzle. Crizzle faucibus shut the shizzle up. Dizzle nibh lectus, consequat sizzle, ornare my shizz, porttitor izzle, bow wow wow. Proin break it down urna. Crizzle condimentum mi gangster nibh. Pellentesque hendrerit euismizzle felis. The bizzle bling bling a erat. Etiam posuere lacinia mi. Ut maurizzle. Sizzle nisl the bizzle, euismizzle shizzle my nizzle crocodizzle, shiznit crazy, malesuada tellivizzle, nisi. Bow wow wow izzle mofo nisl.</p>
+      <p>Da bomb facilisi. Etizzle faucibus pharetra shizzle my nizzle crocodizzle. Vestibulizzle vulputate crunk id gizzle. Crizzle that's the shizzle odio izzle ipsizzle. Curabitizzle break yo neck, yall check it out vizzle gizzle. Cras laoreet, mi bizzle eleifend tincidunt, dolizzle sem sheezy orci, eu placerat gangster mauris phat things. Etizzle uhuh ... yih!, lectizzle et aliquizzle cool, tellizzle nisl yo mamma orci, a fo nulla mi at hizzle. Suspendisse we gonna chung mattizzle fo shizzle. In pulvinizzle aliquizzle ma nizzle. Praesent leo enizzle, tempor nizzle, gangster nec, hizzle pot, sizzle. Mauris ma nizzle massa quis gangsta blandit dictizzle. Sure ullamcorper turpis at sizzle tincidunt shut the shizzle up. Phasellizzle quis maurizzle. Ghetto lacinia. Shizzlin dizzle fermentizzle shit enim. Pellentesque mi. Lorem ipsum dolizzle we gonna chung mah nizzle, consectetuer fo shizzle crazy. Pot urna arcu, convallizzle dawg, sagittizzle a, pharetra eu, neque. Boom shackalack ipsizzle dolor sit amet, consectetizzle dope elit.</p>
+      <p>Sizzle sheezy the bizzle. Phasellizzle gangsta, nulla shut the shizzle up vehicula fo shizzle my nizzle, velizzle erat convallizzle quam, boom shackalack fo shizzle sapizzle shizznit go to hizzle mofo. Pot vestibulum laorizzle phat. Etiam rhoncus tempizzle fizzle. Cras gangster ornare things. Vestibulum bow wow wow quizzle, sure a, pot izzle, faucibizzle rizzle, urna. Vivamizzle eleifend euismod sapien. Maecenizzle tincidunt brizzle things. Yippiyo ut tortor eget erat for sure for sure. Mofo mollizzle da bomb erizzle. Dope egestizzle, metus a pizzle sollicitudizzle, stuff owned aliquet urna, vulputate tellivizzle break it down purizzle izzle velizzle. Suspendisse tristique enim dawg ghetto. Yippiyo dawg ligula et gizzle shit euismod. Fizzle izzle black. Nam velit. Suspendisse ac nibh.</p>
+      <p>Aliquam ultrices, sem black go to hizzle posuere, check out this shizzlin dizzle tempizzle dizzle, phat mollizzle magna justo boofron est. Crunk placerizzle, libero elementizzle euismod fermentizzle, mofo mauris gravida dope, the bizzle vehicula break it down black sed dope. Morbi crazy you son of a bizzle, fo shizzle mah nizzle fo rizzle, mah home g-dizzle check out this, malesuada volutpat, pulvinizzle fo shizzle, pede. Izzle urna. Curabitur placerat, mofo quizzle cursus blandizzle, daahng dawg augue yippiyo dui, own yo' bibendizzle pede ipsizzle non eros. Its fo rizzle break it down. Nam sizzle get down get down break yo neck, yall fizzle. Integizzle fo, turpizzle i saw beyonces tizzles and my pizzle went crizzle auctizzle sollicitudin, pede shiz sempizzle shit, own yo' gangster laorizzle dizzle felizzle izzle dang. Cras izzle boofron. In hac habitasse platea dictumst. Daahng dawg tortizzle crackalackin, faucibus tellivizzle, semper pimpin', dope ac, crackalackin. Cool tellus that's the shizzle, molestie vel, ultricizzle quis, euismizzle non, leo. Uhuh ... yih! izzle magna izzle ass pulvinizzle vulputate. Lorizzle i'm in the shizzle dolizzle sit boofron, fo shizzle my nizzle adipiscing own yo'.</p>
+    </section>
+    {{- end}}
+  </main>
+  <footer>
+    <nav>
+      <a href="https://github.com/bign8/gobench/issues">Issues</a>
+      <a href="https://golang.org/">Go</a>
+      <a href="https://godoc.org/">GoDoc</a>
+      <a href="#">Back to top</a>
+    </nav>
+  </footer>
+  {{if .points -}}
+    <script src="/plotly.js"></script>
+  {{- end -}}
+  <script src="/js.js"></script>
+</body>

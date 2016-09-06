@@ -1,0 +1,30 @@
+hash: 2bb2118942a14c435c4b3c9e6912dfcdefb95a17ad61024633b0c2cfabc8bcb4
+updated: 2016-09-01T22:03:35.206222865-06:00
+imports:
+- name: github.com/golang/protobuf
+  version: 1f49d83d9aa00e6ce4fc8258c71cc7786aec968a
+  subpackages:
+  - proto
+- name: github.com/mjibson/appstats
+  version: 0542d5f0e87ea3a8fa4174322b9532f5d04f9fa8
+- name: golang.org/x/net
+  version: 1358eff22f0dd0c54fc521042cc607f6ff4b531a
+  subpackages:
+  - context
+- name: google.golang.org/appengine
+  version: 4f7eeb5305a4ba1966344836ba4af9996b7b4e05
+  subpackages:
+  - datastore
+  - internal
+  - internal/app_identity
+  - internal/base
+  - internal/datastore
+  - internal/log
+  - internal/memcache
+  - internal/modules
+  - internal/remote_api
+  - internal/user
+  - log
+  - memcache
+  - user
+testImports: []

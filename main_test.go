@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"os/exec"
 	"reflect"
 	"testing"
 )
@@ -75,14 +74,14 @@ var expected = `{"B/op":128,"allocs/op":1,"iter":2000000,"name":"StateApply","ns
 {"B/op":5056,"allocs/op":6,"iter":200000,"name":"SVG","ns/op":8013,"suite":"github.com/bign8/games/impl/ttt"}`
 
 func TestMain(t *testing.T) {
-	cmd := exec.Command("go", "run", "main.go")
-	cmd.Stdin = bytes.NewBufferString(source)
-	out, err := cmd.Output()
+	var out bytes.Buffer
+	in := bytes.NewBufferString(source)
+	err := run(in, &out)
 	if err != nil {
 		t.Error(err)
 	}
 
-	got := json.NewDecoder(bytes.NewReader(out))
+	got := json.NewDecoder(bytes.NewReader(out.Bytes()))
 	has := json.NewDecoder(bytes.NewReader([]byte(expected)))
 
 	var er1, er2 error
