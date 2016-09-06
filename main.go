@@ -63,7 +63,16 @@ func main() {
 		os.Exit(0)
 	}
 	inp, outp, err := getIO()
+	if err == nil {
+		err = run(inp, outp)
+	}
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %s\n", err)
+		os.Exit(1)
+	}
+}
 
+func run(inp io.Reader, outp io.Writer) (err error) {
 	// re-arrange outp if we have a url to post to
 	var buf bytes.Buffer
 	if *url != "" {
@@ -72,14 +81,12 @@ func main() {
 
 	// Process Output
 	parser := batcher{Encoder: json.NewEncoder(outp)}
+	scanner := bufio.NewScanner(inp)
+	for scanner.Scan() && err == nil {
+		err = parser.parse(scanner.Text())
+	}
 	if err == nil {
-		scanner := bufio.NewScanner(inp)
-		for scanner.Scan() && err == nil {
-			err = parser.parse(scanner.Text())
-		}
-		if err == nil {
-			err = scanner.Err()
-		}
+		err = scanner.Err()
 	}
 
 	// Post to gobench server if possible
@@ -95,12 +102,7 @@ func main() {
 			err = errors.New("failed to store data")
 		}
 	}
-
-	// Kill if errors are not good
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %s\n", err)
-		os.Exit(1)
-	}
+	return err
 }
 
 type batcher struct {

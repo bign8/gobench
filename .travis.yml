@@ -9,6 +9,7 @@ go:
 env:
   global:
     - GOBENCH_URL: http://bench.bign8.info
+    - CODECOV_TOKEN: 7b06f7f2-e4f9-44e6-8cd5-c477309aec38
 
 cache:
   directories:
@@ -26,6 +27,10 @@ install:
 script:
   - go test -v -bench=. -benchmem $(glide nv) | tee test.out
   - go run main.go -in test.out
+  - ./cover.sh
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 # deploy:
 #   provider: gae
