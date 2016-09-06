@@ -32,20 +32,22 @@ var (
 	url = flag.String("host", os.Getenv("GOBENCH_URL"), "url of the gobench server")
 
 	findSuite = regexp.MustCompile(gtSuiteRE).FindStringSubmatch
+	open      = os.Open
+	create    = os.Create
 )
 
 func getIn() (io.Reader, error) {
 	if *in == "" {
 		return os.Stdin, nil
 	}
-	return os.Open(*in)
+	return open(*in)
 }
 
 func getOut() (io.Writer, error) {
 	if *out == "" {
 		return os.Stdout, nil
 	}
-	return os.Create(*out)
+	return create(*out)
 }
 
 func getIO() (inp io.Reader, outp io.Writer, err error) {

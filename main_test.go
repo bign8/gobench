@@ -3,6 +3,11 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"os"
 	"reflect"
 	"testing"
 )
@@ -73,7 +78,18 @@ var expected = `{"B/op":128,"allocs/op":1,"iter":2000000,"name":"StateApply","ns
 {"B/op":0,"allocs/op":0,"iter":20000000,"name":"Utility","ns/op":81.3,"suite":"github.com/bign8/games/impl/ttt"}
 {"B/op":5056,"allocs/op":6,"iter":200000,"name":"SVG","ns/op":8013,"suite":"github.com/bign8/games/impl/ttt"}`
 
-func TestMain(t *testing.T) {
+func TestMain(m *testing.M) {
+	flag.Parse()
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "HIJACKED!")
+	}))
+	*url = s.URL
+	out := m.Run()
+	s.Close()
+	os.Exit(out)
+}
+
+func TestRun(t *testing.T) {
 	var out bytes.Buffer
 	in := bytes.NewBufferString(source)
 	err := run(in, &out)
@@ -94,6 +110,27 @@ func TestMain(t *testing.T) {
 	if er1 != er2 {
 		t.Error(er1)
 		t.Error(er2)
+	}
+}
+
+func TestGetIO(t *testing.T) {
+	*in, *out = "", ""
+	i, o, e := getIO()
+	if e != nil {
+		t.Fatal(e)
+	}
+	if i != os.Stdin {
+		t.Fatal("Input Doesn't equal os.Stdin")
+	}
+	if o != os.Stdout {
+		t.Fatal("Ouput Doesn't equal os.Stdout")
+	}
+	open = func(string) (*os.File, error) { return nil, nil }
+	create = func(string) (*os.File, error) { return nil, nil }
+	*in, *out = "IN", "OUT"
+	_, _, e = getIO()
+	if e != nil {
+		t.Fatal(e)
 	}
 }
 
